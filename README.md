@@ -1,2 +1,2 @@
-# website-comprobo-final
-Github pages website/blog for comprobo-final-project
+# Genetic Algorithms
+### Shane Kelly, Kevin Zhang, David Zhu
