@@ -2,19 +2,14 @@
 ### Shane Kelly, Kevin Zhang, David Zhu
 
 
-blah blah blah
-
-
 # Overview
-
-![flow_diagram](images/GA_diagram.png)
-
-
-# Project Story 1 - Playing with Genetic Algorithms
 
 For our final project in Computational Robotics (Spring 2017), we decided to explore the field of genetic algorithms and multi-robot interactions. During the past few weeks, we’ve added several components to our project. For today’s post, we’ll be sharing our first implementation of a genetic algorithm.
 
 Some backstory: the ultimate goal that we chose to implement is to have two robot Neatos collaborate to move a box into a certain destination. Ideally, we would like the box to be placed and oriented at the goal, and we hope that genetic algorithms can train our robots to work together in making this happen.
+
+
+# Project Story 1 - Playing with Genetic Algorithms
 
 To break this problem down, we needed to implement our own genetic algorithm so that we can train our robots in simulation. After doing some research, we were able to find a [Hello world of sorts for writing genetic algorithms](https://github.com/jsvazic/GAHelloWorld/tree/master/python).
 
@@ -43,6 +38,8 @@ To transfer this to our own needs, we changed the way that the fitness of an org
 
 ![GA_diagram](images/GA_diagram.png)
 
-Currently, the architecture consists of a Population of many Chromosomes, a Supervisor that allows for fitness evaluation through a simulated Robot, a RobotController that controls the Robot, and a Simulator where the Robot interacts with the world around it. The following is a basic diagram to illustrate this relationship.
+Currently, our architecture consists of a Population of many Chromosomes, a Supervisor that allows for fitness evaluation through a simulated Robot, a RobotController that controls the Robot, and a Simulator where the Robot interacts with the world around it. The following is a basic diagram to illustrate this relationship.
+
+![class_relationship_diagram](images/class_relationship_diagram.png)
 
 Some challenges we’ve faced while implementing this include defining reasonable models for our task and connecting the algorithm to a simulated environment. Since a robot needs to translate a gene into a movement behavior, we have to choose reasonable genetic models to allow the robot to move correctly. More logistically, a genetic algorithm requires lots of training runs, this requires us to connect our algorithm to a decent simulation environment. 
