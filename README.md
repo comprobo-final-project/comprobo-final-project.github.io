@@ -20,9 +20,43 @@ We learned that genetic algorithm consists of several parts:
 - **Crossover.** Crossover is one channel for chromosomes to produce stronger progeny. Two chromosomes undergo crossover in our evolution function, which allows for the creation of a new gene that may potentially carry the success of its parents.
 - **Mutation.** The final step to produce the next generation is to randomly proceed through the Chromosomes and make random changes to their genes. This adds genetic diversity to the Population, which allows the GA to better discover genetics with high fitness.
 
-The following are some documented code to that contains these steps.
+The following is the main run function inside of our RobotController class that uses the genetics of a Robot to send velocity commands.
 
-TODO: Code sample/gists from the Genetics file?
+```
+def run(self, duration):
+    """
+    Main run function.
+    duration : float - In seconds
+    """
+    end_time = time.time() + duration
+
+    try:
+        while time.time() < end_time:
+            curr_x, curr_y = self.robot.get_position()
+            goal_x = 0.0
+            goal_y = 0.0
+
+            # Calculate difference between robot position and goal position
+            diff_x = goal_x - curr_x
+            diff_y = goal_y - curr_y
+
+            try:
+                # Calculate angle to goal and distance to goal
+                diff_w = math.atan2(diff_y, diff_x)
+                diff_r = math.sqrt(diff_x**2 + diff_y**2)
+            except OverflowError:
+                print diff_x, diff_y
+
+            # Define linear and angular velocities based on genes
+            a1, b1, c1, a2, b2, c2 = self.genes
+            forward_rate = a1*diff_w + b1*diff_r + c1*diff_r**2
+            turn_rate = a2*diff_w + b2*diff_r + c2*diff_r**2
+
+            # Set linear and angular velocities
+            self.robot.set_twist(forward_rate, turn_rate)
+    except KeyboardInterrupt:
+        pass
+```
 
 Genetic algorithms are great at tackling problems with well-defined definitions of success, but little notion of how to actually solve the problem. In this regime, a genetic algorithm will continue to mate, mutate, and interchange variables within the problem until an optimal solution is found. All the while, the genetic algorithm did not need to know exactly what the problem was that it was solving or what the variables meant that it was evolving, just that it continued to increase the fitness of its population of organisms.
 
