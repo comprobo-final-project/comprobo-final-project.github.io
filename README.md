@@ -84,8 +84,9 @@ In the present time, we have just finished integrating together a fully connecte
 
 We ran our first simulation today on a small population with a extremely simplified simulation environment, and it completed with a successful fit chromosome! We plan on now running the simulation on a more formal task, which will be the first iteration of our main task, described as just making the robot move to a location from any starting position. In the next few days we hope to have substantial results, and will work on improving our simulation and models to allow the genetic algorithm to tackle more complex tasks until we reach our objective.
 
+# Design Review
 
------Insert Design Review here-----
+<iframe src="https://docs.google.com/presentation/d/1aTYKJParnEkDXGuCs8zcx-IonNAclAsFSgfxAsjVNXI/embed?start=false&loop=false&delayms=5000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
 # Project Story 2 - Turning Simulation into Reality
 
@@ -95,7 +96,7 @@ Since the last check-in, we’ve improved the training procedure and simulator t
 
 As an overview, we have completed the genetic algorithm portion, with evolution of a population of genes proven successful through experimental runs. Referencing the code architecture diagram from before, our main obstacle right now is the evaluation of the fitness function influencing evolution, which is highly dependent on the simulation of the robot working properly to accurately deliver a fitness level that is reflective of its genes. To that end, we have been revising the simulation and interfacing it with old and new tasks in an attempt to make the simulation as real and robust as possible such that it can solve the given tasks.
 
-![sim_demo](images/sim_demo.gif)
+![sim_demo](images/sim_demo.gif =5x)
 
 ## The Simulator
 
@@ -111,17 +112,17 @@ To simulate this drop, we generate a random number and check if it falls below a
 
 ```python
 def step(self, step_freq):
-        # Skip randomly depending on our noise threshold
-        if (random.random() > self.noise):
-            # ... (Actually take in new update from Twist.
-        
-        # Rest of the update happens
-        velocity_xyz = Vector3()
-        velocity_xyz.x = self.pose.velocity.r * math.cos(self.pose.velocity.w)
-        velocity_xyz.y = self.pose.velocity.r * math.sin(self.pose.velocity.w)
-        self.pose.position += velocity_xyz / step_freq
+    # Skip randomly depending on our noise threshold
+    if (random.random() > self.noise):
+        # ... (Actually take in new update from Twist.
 
-        self.update_listener(step_freq)
+    # Rest of the update happens
+    velocity_xyz = Vector3()
+    velocity_xyz.x = self.pose.velocity.r * math.cos(self.pose.velocity.w)
+    velocity_xyz.y = self.pose.velocity.r * math.sin(self.pose.velocity.w)
+    self.pose.position += velocity_xyz / step_freq
+
+    self.update_listener(step_freq)
 ```
 
 #### Heading
@@ -177,6 +178,14 @@ self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
 #### Motion caps
 
 One thing we forgot to account for in the first iteration of our simulator was the physical limits of the Neato robot. The mechanical design of the Neato only allows it to run at a maximum linear speed of 0.3 meters per second and a angular speed of 2.5 radians per second. However, our simulation didn’t contain any upper or lower bounds on velocity, thus allowing the simulated Neato to run at any speed derived from its function. Incidentally, a previous run with the uncapped simulator gave us a function with coefficients nearing the hundreds, because of the limitless speed range of the Neato. We have now correctly accounted for max speeds, thus making the simulation more realistic and accurate with a real world run.
+
+```python
+def set_twist(self, forward_rate, turn_rate):
+    # Motion is now capped.
+    self.twist.linear.x = np.clip(forward_rate, 0, self.MAX_SPEED)
+    self.twist.angular.z = np.clip(turn_rate, -self.MAX_TURN_RATE, self.MAX_TURN_RATE)
+    self.step(self.resolution)
+```
 
 ## Improvements to our Genetic Algorithm
 
