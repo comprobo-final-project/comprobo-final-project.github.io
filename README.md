@@ -96,7 +96,7 @@ Since the last check-in, we’ve improved the training procedure and simulator t
 
 As an overview, we have completed the genetic algorithm portion, with evolution of a population of genes proven successful through experimental runs. Referencing the code architecture diagram from before, our main obstacle right now is the evaluation of the fitness function influencing evolution, which is highly dependent on the simulation of the robot working properly to accurately deliver a fitness level that is reflective of its genes. To that end, we have been revising the simulation and interfacing it with old and new tasks in an attempt to make the simulation as real and robust as possible such that it can solve the given tasks.
 
-![sim_demo](images/sim_demo.gif =5x)
+<img src="images/sim_demo.gif" alt="sim demo" width="500">
 
 ## The Simulator
 
