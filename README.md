@@ -145,7 +145,7 @@ Our original fitness function only checked for the robot’s position at the end
 
 To reduce overfitting and to make the output of our GA more robust, we made the starting location of each robot be randomly set around the origin.
 
-![fitness_over_time](images/fitness_over_time)
+![fitness_over_time](images/fitness_over_time.png)
 Fitness over time for our updated fitness function. This takes account of movement history.
 
 ## Present Time
