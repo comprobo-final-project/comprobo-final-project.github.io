@@ -109,8 +109,20 @@ To more closely mimic real world robot operation, we simulated randomly dropping
 
 To simulate this drop, we generate a random number and check if it falls below a threshold. If so, we skip the update and continue to let the robot use its prior Twist.
 
-**TODO**
-Code on packet dropping implementation
+```python
+def step(self, step_freq):
+        # Skip randomly depending on our noise threshold
+        if (random.random() > self.noise):
+            # ... (Actually take in new update from Twist.
+        
+        # Rest of the update happens
+        velocity_xyz = Vector3()
+        velocity_xyz.x = self.pose.velocity.r * math.cos(self.pose.velocity.w)
+        velocity_xyz.y = self.pose.velocity.r * math.sin(self.pose.velocity.w)
+        self.pose.position += velocity_xyz / step_freq
+
+        self.update_listener(step_freq)
+```
 
 #### Heading
 
@@ -120,8 +132,31 @@ However, this had major drawbacks. When the calculated velocity vector is zero, 
 
 To rectify this, we’ve changed the velocity vector from a cartesian to a polar representation. This way, when the vector is zero, the robot would also have a set heading. This also simplified calculations for converting twist angles into updated velocity vectors, allowing us to only do one conversion when we update the position.
 
-**TODO**
-codeblock for cartesian vs polar
+```python
+class PolarVector(object):
+
+    def __init__(self):
+        self.r = 0
+        self._w = 0
+
+    @property
+    def w(self):
+        return self._w
+
+    @w.setter
+    def w(self, val):
+        self._w = (val + math.pi) % (2*math.pi) - math.pi
+
+    # x and y are now readonly, and are derived from the polar vector.
+
+    @property
+    def x(self):
+        return self.r * math.cos(self.w)
+
+    @property
+    def y(self):
+        return self.r * math.sin(self.w)
+```
 
 Having polar velocity vectors is still not the most ideal way to represent this information in the simulated robot. Since our robot is 2D, allowing the robot to have a Quaternion orientation (to match ROS) did not make too much sense, and it would also require us to do additional conversions. However, the velocity vector is now read and write when instead it should be read only. There should be a separation between a robot’s heading and its internal update velocity. In the future, we plan on making a robot’s heading a scalar, rather than setting the polar vector externally.
 
@@ -131,8 +166,13 @@ Since the real-life neato is fairly slow motion and instantaneous in its movemen
 
 To make movement transitions smoother, we introduced a HISTORY factor, which updates the new velocity vector based partly on its past velocity. A certain percentage of the velocity comes from its prior, while the rest is calculated through the twist. Tuning this value creates a rough model of acceleration changes for the simulator.
 
-**TODO**
-Codeblock on HISTORY
+```python
+# Average the prior velocity to get a more gradual change
+self.pose.velocity.r = self.pose.velocity.r * self.HISTORY + \
+    vel_r * (1 - self.HISTORY)
+self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
+    vel_w * (1 - self.HISTORY)
+```
 
 #### Motion caps
 
