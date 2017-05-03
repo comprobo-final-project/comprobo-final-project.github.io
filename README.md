@@ -86,6 +86,10 @@ We ran our first simulation today on a small population with a extremely simplif
 
 # Design Review
 
+### 4/24/2017
+
+Following Project Story 1, we presented at a design review meant to showcase what our project was and what our current progress was. This slideshow reviews some information from before, but also gives new insight and steps of progress made since Project Story 1. Feel free to flip through the slides to see what we were up to between Project Story 1 and 2!
+
 <iframe src="https://docs.google.com/presentation/d/1aTYKJParnEkDXGuCs8zcx-IonNAclAsFSgfxAsjVNXI/embed?start=false&loop=false&delayms=5000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
 # Project Story 2 - Turning Simulation into Reality
