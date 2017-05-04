@@ -69,14 +69,37 @@
 						<span class="icon fa-laptop"></span>
 						<h2>Genetic Algorithms and Multi-Robot Interaction
 						<br /></h2>
-						<p>For our final project in Computational Robotics (Spring 2017),
-							 we decided to explore the field of genetic algorithms and multi-robot interactions. Something something something. </p>
+						<p>Project: Nevo explores the field of genetic algorithms and applies them to multiple robots in an attempt to complete a given task.
+						By using a learning approach similar to natural selection in nature, robots can evolve to become more optimized cooperating or competing towards a particular
+						objective. </p>
+						<br/>
+						<p>Our system can take in one of several different tasks, each defined by a fitness function and a model, and using a genetic algorithm output a set of coefficients (genes) that can be used
+						by a Neato to accomplish the given task optimally. For any task, our system creates virtual robots represented in the genetic algorithm as genes, and uses a virtual simulator to determine the best
+						robot by its genes. Eventually through simulation and evolution on these virtual robots, the best set of genes representing the most fit robot will be found.
+						We then translate these genes (coefficients) onto Neatos, and watch as they achieve the task live in the real world.
+
+
 					</header>
+
+					<section class="wrapper style1 container special">
+						<header class="special container">
+							<h2>Genetic Algorithms 101
+							<br /></h2>
+							<p>The concept of genetic algorithms can be broken down into four main steps:</p>
+
+						</header>
+
+						<div style="text-align:center">
+							<img src="images/ga_diagram_final.png" alt="sim demo" width="1200">
+						</div>
+
+						</section>
+
 
 					<!-- Two -->
 						<section class="wrapper style1 container special">
 							<header class="special container">
-								<h2>Genetic Algorithm Overview</h2>
+								<h2>Optimized Interactions</h2>
 
 							</header>
 							<div class="row">
@@ -85,34 +108,44 @@
 									<section>
 										<span class="icon featured fa-flag"></span>
 										<header>
-											<h3>Simulate</h3>
+											<h3>Easy: <br/>Waypoint Navigation</h3>
 										</header>
-										<p>A generation of organisms attemptsi to complete a task, where the success of each organism is determined by its specific genetics.</p>
+										<p>One robot finds it way to a goal starting from a random location.
+										Consists of one population of organisms with 4 genes each, with each organism representing one robot.</p>
 									</section>
 
 								</div>
-								<div class="4u 12u(narrower)">
 
-									<section>
-										<span class="icon featured fa-trophy"></span>
-										<header>
-											<h3>Evaluate</h3>
-										</header>
-										<p>A heuristic is developed that quantifies how well each organism in a generation completed the task.</p>
-									</section>
-
-								</div>
 								<div class="4u 12u(narrower)">
 
 									<section>
 										<span class="icon featured fa-arrows-h"></span>
 										<header>
-											<h3>Evolve</h3>
+											<h3>Moderate: <br/>Line Up</h3>
 										</header>
-										<p>A new generation is created from the old generation, where the genetics of more fit organisms are more likely to move on to the new generation.</p>
+										<p>Three robots starting at random locations can move in accordance with each other to form a straight line.
+										Consists of one population of organisms with 12 genes each, with each organism representing all three robots
+										cooperating with each other.</p>
 									</section>
 
 								</div>
+
+								<div class="4u 12u(narrower)">
+
+									<section>
+										<span class="icon featured fa-trophy"></span>
+										<header>
+											<h3>Hard:<br/> Tag</h3>
+										</header>
+										<p>Two robots play the game of tag with each other, with one trying to tag the other and the other attempting to run away.
+										Consists of two populations of organisms with 4 genes each, with each organism repesenting one robot and each population
+										representing one of the two competing sides.</p>
+									</section>
+
+								</div>
+
+
+
 							</div>
 						</section>
 
@@ -121,28 +154,10 @@
 						<section class="wrapper style2 container special-alt">
 
 									<header>
-										<h2> Our <strong>results</strong> </h2>
+										<h2> <strong>Results</strong> </h2>
 									</header>
-										<header>
-											<h3>Navigate to Waypoint</h3>
-										</header>
 
-<img src="images/navigate_to_waypoint.gif" alt="" />
-										<p> TODO </p>
-
-										<header>
-											<h3>Form a Line</h3>
-										</header>
-
-<img src="images/form_a_line.gif" alt="" />
-										<p> TODO </p>
-
-										<header>
-											<h3>Play tag</h3>
-										</header>
-
-<img src="images/play_tag.gif" alt="" />
-										<p> TODO </p>
+										<p>Insert final video containing all tasks here (Kevin will make it, just needs nice film of the tasks)</p>
 
 
 						</section>
@@ -537,12 +552,44 @@ self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
 
 
 									<section>
-										<a href="#" class="image featured"><img src="images/pic02.jpg" alt="" /></a>
 										<header>
 											<h3>Final Project Story - It's All Coming Together</h3>
 											<h4> 5/1/2017</h4>
 										</header>
-										<p>Sed tristique purus vitae volutpat commodo suscipit amet sed nibh. Proin a ullamcorper sed blandit. Sed tristique purus vitae volutpat commodo suscipit ullamcorper sed blandit lorem ipsum dolore.</p>
+										<p>As a final checkup, we would like to explain some big changes we have made since Project Story 2. Our code architecture has been
+										revamped to allow for more modular and faster training of various tasks, and tasks are starting to
+										translate from simulations into the real world. Here we would like to give insight on design choices in our new code architecture,
+										as well as show first successes on our way to the final deliverable.</p>
+
+										<h5> Codebase Optimization </h5>
+
+										<p> David talk about your stuffs here</p>
+
+										<h5> Finding a Goal Works! </h5>
+
+										<p> At long last, we were finally able to successfully run the goal task in the real world. It seems that the problem was regarding some
+										discrepancies between our custom simulation and Gazebo, which when solved allowed our optimized organism to work on both. We then interfaced with
+										a Neato using april tags, and then it just worked.</p>
+
+										<p>Insert goal video here</p>
+
+										<h5> Collinear Task followed soon after </h5>
+
+										<p> Given the new codebase, it became incredibly easy to switch out different fitness functions and models for different tasks, allowing us
+										to very quickly define, integrate, and train a genetic algorithm on a collinear task, where three robots attempt to form a line. Interestingly
+										enough, it appears that evolution caused the three robots to form defined roles, such as robot in the middle behaving differently than the
+										robots on the sides when forming a line. This meant that in certain edge cases, the robots would take much longer to form a line because certain
+	 									robots were randomly placed in positions that didn't match their defined role, whereas in others it would be extremely fast. In addition, it
+										was found that the robots will continually search for a better line to make, such as widening the length of the line to generate less error
+										in collinearity. After validation on our custom simulation, we interfaced with three Neatos and ran the optimized organism. It worked twice
+										in a row.</p>
+
+										<p>Insert collinearity video here </p>
+
+
+										<p>For the final few days, we plan on training as many tasks as we can in an attempt to optimize increasingly complex tasks. We hope that by the
+										end of the project, we will have an array of various optimized tasks to show. All that's left is to grind out as many as we can. </p>
+
 									</section>
 
 							</div>
@@ -558,8 +605,8 @@ self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
 					</header>
 					<footer>
 						<ul class="buttons">
-							<li><a href="#top" class="button special">Oh Yes~</a></li>
-							<li><a href="#top" class="button">LOL Wut</a></li>
+							<li><a href="#top" class="button special scrolly">Oh Yes~</a></li>
+							<li><a href="#top" class="button scrolly">LOL Wut</a></li>
 						</ul>
 					</footer>
 
