@@ -179,20 +179,24 @@
 										<header>
 											<h3>Task</h3>
 										</header>
-										<p> This is the main organizing class of our genetic algorithm architecture. Within the Task class, there is a definition for how organisms simulate the task, how organisms are evaluated for fitness, and this is also where the GeneticAlgorithm object is created. Note that this class is meant to absorb all idiosyncracies that may occur when using a genetic algorithm to solve different tasks. This allows for the rest of the software to be the same across all different applications of the genetic algorithm. </p>
+										<p> This is the main organizing class of our genetic algorithm architecture. Within the Task class, there is a definition for how organisms simulate the task, how organisms are evaluated for fitness, and this is also where the GeneticAlgorithm object is created. Note that this class is meant to absorb all idiosyncracies that may occur when using a genetic algorithm to solve different tasks. This allows for the rest of the software to be the same across all different applications of the genetic algorithm.
+                    </p>
+                    <p>
+                      Tasks have 4 user-facing commands. `--train` starts the training of the task, specified by the hyperparameters defined in the `train` method. `--visualize` opens the matplotlib visualizer. Organisms need to be first defined before visualizations can happen. `--gazebo` uses our model robots and publishes events to ROS running Gazebo. `--real` is similar but publishes to the real world, where robot positions are defined by April tags.
+                    </p>
 										<header>
 											<h3>GeneticAlgorithm</h3>
 										</header>
 										<p> The GeneticAlgorithm class oversees the main training loop, prompting the Generation to simulate the task, evaluate fitness, and then evolve. In our implementation, the GeneticAlgorithm also logs data about the most fit organisms in each generation. </p>
 											<h3>Generation</h3>
 										</header>
-										<p> The Generation class holds the genetics of every organism and the functionality for mutating, crossingover, evolving, and evaluating fitness. </p>
+										<p> The Generation class holds the genetics of every organism and the functionality for mutating, crossing over, evolving, and evaluating fitness. </p>
 											<h3>Simulator</h3>
 										</header>
 										<p> The Simulator creates a two dimensional representation of an organism's actions as dictated by its genetics. This gives us a deeper insight into our genetic algorithm by illuminating the frame-by-frame behavior of individual organisms rather than just a quantified fitness. </p>
 											<h3>Robot</h3>
 										</header>
-										<p> The Robot, as represented in our diagram, actually represents two unique classes within our genetic algorithm. The Robot can be either simulated, which is used for training faster than real-time would allow and visualizing in 2D, or real, which allows us to implement our highly fit genetics on a physical robot to see how it performs. </p>
+										<p> The Robot, as represented in our diagram, actually represents two unique classes within our genetic algorithm. The Robot can be either simulated, which is used for training faster than real-time would allow and visualizing in 2D, or real, which allows us to implement our highly fit genetics on a physical robot to see how it performs. Our non-simulated robot can toggle between communicating with Gazebo and with the real world (AprilTags) through a flag.</p>
 
 									</section>
 
@@ -562,8 +566,6 @@ self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
 										as well as show first successes on our way to the final deliverable.</p>
 
 										<h5> Codebase Optimization </h5>
-
-										<p> David talk about your stuffs here</p>
 
 										<h5> Finding a Goal Works! </h5>
 
