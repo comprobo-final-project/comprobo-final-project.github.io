@@ -179,20 +179,24 @@
 										<header>
 											<h3>Task</h3>
 										</header>
-										<p> This is the main organizing class of our genetic algorithm architecture. Within the Task class, there is a definition for how organisms simulate the task, how organisms are evaluated for fitness, and this is also where the GeneticAlgorithm object is created. Note that this class is meant to absorb all idiosyncracies that may occur when using a genetic algorithm to solve different tasks. This allows for the rest of the software to be the same across all different applications of the genetic algorithm. </p>
+										<p> This is the main organizing class of our genetic algorithm architecture. Within the Task class, there is a definition for how organisms simulate the task, how organisms are evaluated for fitness, and this is also where the GeneticAlgorithm object is created. Note that this class is meant to absorb all idiosyncracies that may occur when using a genetic algorithm to solve different tasks. This allows for the rest of the software to be the same across all different applications of the genetic algorithm.
+                    </p>
+                    <p>
+                      Tasks have 4 user-facing commands. `--train` starts the training of the task, specified by the hyperparameters defined in the `train` method. `--visualize` opens the matplotlib visualizer. Organisms need to be first defined before visualizations can happen. `--gazebo` uses our model robots and publishes events to ROS running Gazebo. `--real` is similar but publishes to the real world, where robot positions are defined by April tags.
+                    </p>
 										<header>
 											<h3>GeneticAlgorithm</h3>
 										</header>
 										<p> The GeneticAlgorithm class oversees the main training loop, prompting the Generation to simulate the task, evaluate fitness, and then evolve. In our implementation, the GeneticAlgorithm also logs data about the most fit organisms in each generation. </p>
 											<h3>Generation</h3>
 										</header>
-										<p> The Generation class holds the genetics of every organism and the functionality for mutating, crossingover, evolving, and evaluating fitness. </p>
+										<p> The Generation class holds the genetics of every organism and the functionality for mutating, crossing over, evolving, and evaluating fitness. </p>
 											<h3>Simulator</h3>
 										</header>
 										<p> The Simulator creates a two dimensional representation of an organism's actions as dictated by its genetics. This gives us a deeper insight into our genetic algorithm by illuminating the frame-by-frame behavior of individual organisms rather than just a quantified fitness. </p>
 											<h3>Robot</h3>
 										</header>
-										<p> The Robot, as represented in our diagram, actually represents two unique classes within our genetic algorithm. The Robot can be either simulated, which is used for training faster than real-time would allow and visualizing in 2D, or real, which allows us to implement our highly fit genetics on a physical robot to see how it performs. </p>
+										<p> The Robot, as represented in our diagram, actually represents two unique classes within our genetic algorithm. The Robot can be either simulated, which is used for training faster than real-time would allow and visualizing in 2D, or real, which allows us to implement our highly fit genetics on a physical robot to see how it performs. Our non-simulated robot can toggle between communicating with Gazebo and with the real world (AprilTags) through a flag.</p>
 
 									</section>
 
@@ -563,7 +567,46 @@ self.pose.velocity.w = self.pose.velocity.w * self.HISTORY + \
 
 										<h5> Codebase Optimization </h5>
 
-										<p> David talk about your stuffs here</p>
+                    <p>As we began introducing new tasks for our genetic algorithm to train, it became increasingly apparent that we needed to improve the performance of our algorithm to handle more complex training. We did this by simplifying the architecture, moving to numpy and matrix math, using multiprocessing for parallel calculations, and allowing for multiple organisms to be evaluated in the same generation. After these changes have been made, we wrapped the new code into a V2.0 module to prevent breaking existing behavior. New tasks were written using the upgraded genetic algorithm library.</p>
+
+                    <h6>Simplifying the architecture</h6>
+
+                    <p>In V1 of our genetic algorithm, we had class concepts such as `Chromosome`, `Supervisor`, and `RobotController`. These were classes we built organically as we realized more logic was needed. We imagined Chromosomes to handle logic such as crossovers  and mutation, and we believed that this is reminiscent of real world objects. The RobotController was meant to control any kind of robot, whether virtual, gazebo, or real. The Supervisor handled resetting, setting genes for, and running each robot. Although modular, there were many dependencies that we had to pass around for each class. Genes are dependent in multiple places, and references to robots were also passed around. This became especially problematic when we tried to create new robot tasks. We began overwriting each other’s work as we tried to implement collinear, orbital, and goal tasks at the same time.</p>
+
+                    <p>With V2, these classes are simplified; their logic is moved up into the GeneticAlgorithm/Generation and Tasks. Our genetic algorithm now handles mutations and crossovers, and organisms are stored in a 3D array. The 3D array consists of `n` organisms, `m` population, and `p` genes per organism. By reducing the extra classes, it simplified dependencies and allowed for all calculations to happen in bulk during a few methods.</p>
+
+                    <h6>Moving to Numpy</h6>
+                    <p>By storing and operating on organisms in a numpy array, bulk calculations can improve performance, and less nested loops need to be written. We also removed some of our homebrewed mini-algorithms with more performant numpy ones to further simplify our code.</p>
+
+                    <p>Although the structure for additional optimization is present, several chunks of our code, such as the `evolve` method still uses V1’s implementation. This is due to time constraints, but in the future training can be even faster when this is done in Numpy.</p>
+
+                    <h6>Multiprocessing</h6>
+                    <p>Multiprocessing is by far the most effective way for us to improve the speed of our training. By adding a few lines of code using the `multiprocess` library, we were able to run our simulations in parallel on multiple cores. This is possible since each simulation is independent of the next, and we can do a simple mapping. This can be seen in `pool.map` below.</p>
+
+ <pre><code>
+    def evaluate_fitness(self):
+        """
+        Calculates fitness of all organisms in the generation and sorts by most
+        fit.
+        """
+
+        pool = Pool(processes=self.num_jobs)
+        fitness_output = np.array(pool.map(self.fitness_func, \
+            np.transpose(self._organisms, (1,0,2))))
+        self._fitness_lists = fitness_output.transpose().reshape((\
+            self.num_organisms, self.gen_size))
+        pool.close()
+        pool.join()
+        self._sort() # Make sure to sort at the end for fitness
+</code></pre>
+
+<p>Additionally, for expensive tasks such as letting the robots be collinear, we sped up the training by moving the code to Olin’s Deepthought server. The computer has 100 cores, and running 1000 generations took less than 20 minutes.</p>
+
+<h6>Multi-organism simulation</h6>
+
+<p>The biggest and most time consuming change we made was to allow for multiple organisms to be simulated in the genetic algorithm. This was challenging because it changed the implementation of many of our internal code, which originally only handled a single organism. We had to figure out how to sort, tournament select, mutate, and evolve for multiple organisms with different fitness objectives.</p>
+
+<p>However, these changes had a significant payoff. By allowing for multi-organism training, we were able to train a basic tag task, where one robot chases another. The chaser and runner have different fitness requirements, and this upgrade allowed these organisms to have individual genes (with crossovers, mutations, etc. respective to their gene). Ultimately, this change allows us to simulate multiple populations in the same world.</p>
 
 										<h5> Finding a Goal Works! </h5>
 
